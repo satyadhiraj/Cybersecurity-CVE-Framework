@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>CYBER FRAMEWORK</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#sheet').change(function() {
+                var selectedSheet = $(this).val();
+                $.getJSON('/attack_options/' + selectedSheet, function(data) {
+                    var attackDropdown = $('#attack');
+                    attackDropdown.empty();
+                    $.each(data, function(index, value) {
+                        attackDropdown.append('<option value="' + value + '">' + value + '</option>');
+                    });
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="container">
+        <form method='post' action='/result'>
+            <div class="input-group">
+                <label for='sheet'>SELECT ATTACK CATEGORY</label>
+                <select name='sheet' id='sheet' class="select-box">
+                    {{ sheet_selection | safe }}
+                </select>
+            </div>
+            <div class="input-group">
+                <label for='attack'>SELECT TYPE OF ATTACK</label>
+                <select name='attack' id='attack' class="select-box">
+                    <!-- Options will be populated dynamically using jQuery -->
+                </select>
+            </div>
+            <input type='submit' value='Submit'>
+        </form>
+        
+    </div>
+    <script>
+        function displayAttackDetails(data) {
+            var table = "<table>";
+            table += "<tr><th class='first-heading'>CVE Details</th><th>Description</th><th>Severity</th><th>Primary Mitigations</th></tr>";
+
+            data.forEach(function(entry) {
+                table += "<tr>";
+                table += "<td>" + entry.CVE + "</td>";
+                table += "<td>" + entry.Description + "</td>";
+                table += "<td>" + entry.SEVERITY + "</td>";
+                table += "<td>" + entry.PRIMARY_MITIGATIONS + "</td>";
+                table += "</tr>";
+            });
+            table += "</table>";
+            $("#attack-details").html(table);
+        }
+    </script>
+</body>
+</html>
+
